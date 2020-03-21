@@ -1,4 +1,28 @@
+/*
+ * Copyright (C) 2019 MILLAU Julien
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.pro100svitlo.creditCardNfcReader.parser.apdu.impl;
+
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.pro100svitlo.creditCardNfcReader.iso7816emv.ITag;
 import com.pro100svitlo.creditCardNfcReader.iso7816emv.TagAndLength;
@@ -7,20 +31,12 @@ import com.pro100svitlo.creditCardNfcReader.parser.apdu.IFile;
 import com.pro100svitlo.creditCardNfcReader.parser.apdu.annotation.AnnotationData;
 import com.pro100svitlo.creditCardNfcReader.parser.apdu.annotation.AnnotationUtils;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
 import fr.devnied.bitlib.BitUtils;
 
 /**
  * Abstract class for all object to parse
+ * 
+ * @author MILLAU Julien
  */
 public abstract class AbstractByteBean<T> extends AbstractData implements IFile {
 
@@ -39,7 +55,7 @@ public abstract class AbstractByteBean<T> extends AbstractData implements IFile 
 	 * 
 	 * @return An annotation set which contain all annotation data
 	 */
-	private Collection<AnnotationData> getAnnotationSet(final List<TagAndLength> pTags) {
+	private Collection<AnnotationData> getAnnotationSet(final Collection<TagAndLength> pTags) {
 		Collection<AnnotationData> ret = null;
 		if (pTags != null) {
 			Map<ITag, AnnotationData> data = AnnotationUtils.getInstance().getMap().get(getClass().getName());
@@ -69,7 +85,7 @@ public abstract class AbstractByteBean<T> extends AbstractData implements IFile 
 	 * @param pTags
 	 */
 	@Override
-	public void parse(final byte[] pData, final List<TagAndLength> pTags) {
+	public void parse(final byte[] pData, final Collection<TagAndLength> pTags) {
 		Collection<AnnotationData> set = getAnnotationSet(pTags);
 		BitUtils bit = new BitUtils(pData);
 		Iterator<AnnotationData> it = set.iterator();

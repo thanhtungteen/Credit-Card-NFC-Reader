@@ -1,18 +1,34 @@
+/*
+ * Copyright (C) 2019 MILLAU Julien
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.pro100svitlo.creditCardNfcReader.parser.apdu.impl;
 
 import com.pro100svitlo.creditCardNfcReader.model.enums.IKeyEnum;
 import com.pro100svitlo.creditCardNfcReader.parser.apdu.annotation.AnnotationData;
 import com.pro100svitlo.creditCardNfcReader.utils.EnumUtils;
-
+import fr.devnied.bitlib.BitUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Calendar;
 import java.util.Date;
-
-import fr.devnied.bitlib.BitUtils;
 
 /**
  * Factory to parse data
+ *
+ * @author MILLAU Julien
  */
 public final class DataFactory {
 
@@ -26,6 +42,8 @@ public final class DataFactory {
 	 */
 	public static final int BCD_DATE = 1;
 
+	public static final int CPCL_DATE = 2;
+
 	/**
 	 * Half byte size
 	 */
@@ -38,7 +56,7 @@ public final class DataFactory {
 
 	/**
 	 * Method to get a date from the bytes array
-	 * 
+	 *
 	 * @param pAnnotation
 	 *            annotation data
 	 * @param pBit
@@ -49,21 +67,67 @@ public final class DataFactory {
 		Date date = null;
 		if (pAnnotation.getDateStandard() == BCD_DATE) {
 			date = pBit.getNextDate(pAnnotation.getSize(), pAnnotation.getFormat(), true);
+		} else if (pAnnotation.getDateStandard() == CPCL_DATE) {
+			date = calculateCplcDate(pBit.getNextByte(pAnnotation.getSize()));
 		} else {
 			date = pBit.getNextDate(pAnnotation.getSize(), pAnnotation.getFormat());
 		}
 		return date;
 	}
 
+
+	/**
+	 * Takes a date value as used in CPLC Date fields (represented by 2 bytes)
+	 *
+	 * @param dateBytes raw bytes
+	 * @throws IllegalArgumentException when the data size is wrong
+	 * @return the date
+	 */
+	public static Date calculateCplcDate(byte[] dateBytes)
+			throws IllegalArgumentException {
+		if (dateBytes == null || dateBytes.length != 2) {
+			throw new IllegalArgumentException(
+					"Error! CLCP Date values consist always of exactly 2 bytes");
+		}
+		// Check empty date
+		if (dateBytes[0] == 0 && dateBytes[1] == 0){
+			return null;
+		}
+		// current time
+		Calendar now = Calendar.getInstance();
+
+		int currenctYear = now.get(Calendar.YEAR);
+		int startYearOfCurrentDecade = currenctYear - (currenctYear % 10);
+
+		int days = 100 * (dateBytes[0] & 0xF) + 10 * (0xF & dateBytes[1] >>> 4) + (dateBytes[1] & 0xF);
+
+		if (days > 366) {
+			throw new IllegalArgumentException(
+					"Invalid date (or are we parsing it wrong??)");
+		}
+
+		Calendar calculatedDate = Calendar.getInstance();
+		calculatedDate.clear();
+		int year = startYearOfCurrentDecade + (0xF & dateBytes[0] >>> 4);
+		calculatedDate.set(Calendar.YEAR, year);
+		calculatedDate.set(Calendar.DAY_OF_YEAR, days);
+		while (calculatedDate.after(now)) {
+			year = year - 10;
+			calculatedDate.clear();
+			calculatedDate.set(Calendar.YEAR, year);
+			calculatedDate.set(Calendar.DAY_OF_YEAR, days);
+		}
+		return calculatedDate.getTime();
+	}
+
 	/**
 	 * This method is used to get an integer
-	 * 
+	 *
 	 * @param pAnnotation
 	 *            annotation
-	 * @param pObject
-	 *            the object to set
 	 * @param pBit
 	 *            bit array
+	 * @return the integer value
 	 */
 	private static int getInteger(final AnnotationData pAnnotation, final BitUtils pBit) {
 		return pBit.getNextInteger(pAnnotation.getSize());
@@ -71,7 +135,7 @@ public final class DataFactory {
 
 	/**
 	 * Method to read and object from the bytes tab
-	 * 
+	 *
 	 * @param pAnnotation
 	 *            all information data
 	 * @param pBit
@@ -90,8 +154,6 @@ public final class DataFactory {
 			obj = getString(pAnnotation, pBit);
 		} else if (clazz.equals(Date.class)) {
 			obj = getDate(pAnnotation, pBit);
-		} else if (clazz.equals(Boolean.class)) {
-			obj = pBit.getNextBoolean();
 		} else if (clazz.isEnum()) {
 			obj = getEnum(pAnnotation, pBit);
 		}
@@ -100,7 +162,7 @@ public final class DataFactory {
 
 	/**
 	 * Method use to get float
-	 * 
+	 *
 	 * @param pAnnotation
 	 *            annotation
 	 * @param pBit
@@ -121,7 +183,7 @@ public final class DataFactory {
 
 	/**
 	 * This method is used to get an enum with his key
-	 * 
+	 *
 	 * @param pAnnotation
 	 *            annotation
 	 * @param pBit
@@ -140,7 +202,7 @@ public final class DataFactory {
 
 	/**
 	 * This method get a string (Hexa or ASCII) from a bit table
-	 * 
+	 *
 	 * @param pAnnotation
 	 *            annotation data
 	 * @param pBit

@@ -194,7 +194,7 @@ public class MainActivity extends AppCompatActivity implements CardNfcAsyncTask.
                     .setAction("GO", new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            goToRepo();
+                            //goToRepo();
                         }
                     });
         } else if (cardType.equals(CardNfcAsyncTask.CARD_VISA)){

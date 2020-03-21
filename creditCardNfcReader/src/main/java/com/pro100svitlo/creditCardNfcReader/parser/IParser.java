@@ -13,29 +13,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.pro100svitlo.creditCardNfcReader.exception;
+package com.pro100svitlo.creditCardNfcReader.parser;
+
+import com.pro100svitlo.creditCardNfcReader.exception.CommunicationException;
+import com.pro100svitlo.creditCardNfcReader.model.Application;
+
+import java.util.regex.Pattern;
 
 /**
- * Exception during TLV reading
- * 
+ * Parser Interface
+ *
  * @author MILLAU Julien
- * 
+ *
  */
-public class TlvException extends RuntimeException {
+public interface IParser {
 
 	/**
-	 * Generated serial ID
+	 * Get the RID or AID of the application to parse
+	 *
+	 * @return the RID or AID
 	 */
-	private static final long serialVersionUID = -970100072282593424L;
+	Pattern getId();
 
 	/**
-	 * Constructor using field
-	 * 
-	 * @param pCause
-	 *            cause
+	 * Parse the card according to the
+	 *
+	 * @param pApplication
+	 *            current application
+	 * @return true if the card was read without errors
+	 * @throws CommunicationException communication error
 	 */
-	public TlvException(final String pCause) {
-		super(pCause);
-	}
+	boolean parse(Application pApplication) throws CommunicationException;
 
 }

@@ -1,10 +1,28 @@
+/*
+ * Copyright (C) 2019 MILLAU Julien
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.pro100svitlo.creditCardNfcReader.enums;
 
-import com.pro100svitlo.creditCardNfcReader.utils.BytesUtils;
+import fr.devnied.bitlib.BytesUtils;
 
 /**
- * List of status word (last 2 bytes) in APDU response<br/>
+ * List of status word (last 2 bytes) in APDU response <br>
  * https://www.eftlab.co.uk/index.php/site-map/knowledge-base/118-apdu-response-list
+ *
+ * @author MILLAU Julien
+ *
  */
 public enum SwEnum {
 
@@ -194,7 +212,7 @@ public enum SwEnum {
 
 	/**
 	 * Constructor using field
-	 * 
+	 *
 	 * @param pStatus
 	 *            status word
 	 */
@@ -205,7 +223,7 @@ public enum SwEnum {
 
 	/**
 	 * Method used to get the field status
-	 * 
+	 *
 	 * @return the status
 	 */
 	public byte[] getStatus() {
@@ -214,7 +232,7 @@ public enum SwEnum {
 
 	/**
 	 * Method used to get the field detail
-	 * 
+	 *
 	 * @return the detail
 	 */
 	public String getDetail() {
@@ -223,7 +241,7 @@ public enum SwEnum {
 
 	/**
 	 * Method used to get the Status word
-	 * 
+	 *
 	 * @param pData
 	 *            bytes array
 	 * @return the status word

@@ -9,8 +9,8 @@ import android.util.Log;
 
 import com.pro100svitlo.creditCardNfcReader.enums.EmvCardScheme;
 import com.pro100svitlo.creditCardNfcReader.model.EmvCard;
-import com.pro100svitlo.creditCardNfcReader.parser.EmvParser;
-import com.pro100svitlo.creditCardNfcReader.utils.Provider;
+//import com.pro100svitlo.creditCardNfcReader.parser.EmvParser;
+//import com.pro100svitlo.creditCardNfcReader.utils.Provider;
 
 
 import org.apache.commons.io.IOUtils;
@@ -75,7 +75,7 @@ public class CardNfcAsyncTask extends AsyncTask<Void, Void, Object>{
     public final static String CARD_TENN = EmvCardScheme.TENN.toString();
     public final static String CARD_RUPAY = EmvCardScheme.RUPAY.toString();
     public final static String CARD_ПРО100 = EmvCardScheme.ПРО100.toString();
-    public final static String CARD_ZKA = EmvCardScheme.ZKA.toString();
+    public final static String CARD_ZKA = EmvCardScheme.GELDKARTE.toString();
     public final static String CARD_BANKAXEPT = EmvCardScheme.BANKAXEPT.toString();
     public final static String CARD_BRADESCO = EmvCardScheme.BRADESCO.toString();
     public final static String CARD_MIDLAND = EmvCardScheme.MIDLAND.toString();
@@ -96,7 +96,7 @@ public class CardNfcAsyncTask extends AsyncTask<Void, Void, Object>{
             "Here is my email: pro100svitlo@gmail.com. \n\n" +
             "===========================================================================";
 
-    private Provider mProvider = new Provider();
+//    private Provider mProvider = new Provider();
     private boolean mException;
     private EmvCard mCard;
     private CardNfcInterface mInterface;
@@ -140,7 +140,7 @@ public class CardNfcAsyncTask extends AsyncTask<Void, Void, Object>{
     protected void onPreExecute() {
         super.onPreExecute();
         mInterface.startNfcReadCard();
-        mProvider.getLog().setLength(0);
+//        mProvider.getLog().setLength(0);
     }
 
     @Override
@@ -164,15 +164,15 @@ public class CardNfcAsyncTask extends AsyncTask<Void, Void, Object>{
             if (mCard != null) {
                 if (StringUtils.isNotBlank(mCard.getCardNumber())) {
                     mCardNumber = mCard.getCardNumber();
-                    mExpireDate = mCard.getExpireDate();
+//                    mExpireDate = mCard.getExpireDate();
                     mCardType = mCard.getType().toString();
                     if (mCardType.equals(EmvCardScheme.UNKNOWN.toString())){
                         Log.d("creditCardNfcReader", UNKNOWN_CARD_MESS);
                     }
                     mInterface.cardIsReadyToRead();
-                } else if (mCard.isNfcLocked()) {
-                    mInterface.cardWithLockedNfc();
-                }
+                } //else if (mCard.isNfcLocked()) {
+//                    mInterface.cardWithLockedNfc();
+//                }
             } else {
                 mInterface.unknownEmvCard();
             }
@@ -195,10 +195,10 @@ public class CardNfcAsyncTask extends AsyncTask<Void, Void, Object>{
             // Open connection
             mIsoDep.connect();
 
-            mProvider.setmTagCom(mIsoDep);
-
-            EmvParser parser = new EmvParser(mProvider, true);
-            mCard = parser.readEmvCard();
+//            mProvider.setmTagCom(mIsoDep);
+//
+//            EmvParser parser = new EmvParser(mProvider, true);
+//            mCard = parser.readEmvCard();
         } catch (IOException e) {
             mException = true;
         } finally {
@@ -208,7 +208,7 @@ public class CardNfcAsyncTask extends AsyncTask<Void, Void, Object>{
 
     private void clearAll() {
         mInterface = null;
-        mProvider = null;
+//        mProvider = null;
         mCard = null;
         mTag = null;
         mCardNumber = null;

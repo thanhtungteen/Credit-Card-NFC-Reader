@@ -1,12 +1,32 @@
+/*
+ * Copyright (C) 2019 MILLAU Julien
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.pro100svitlo.creditCardNfcReader.model;
 
-import com.pro100svitlo.creditCardNfcReader.enums.EmvCardScheme;
-
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
+
+import com.pro100svitlo.creditCardNfcReader.enums.EmvCardScheme;
+import com.pro100svitlo.creditCardNfcReader.model.enums.CardStateEnum;
 
 /**
  * Bean used to describe data in EMV card
+ *
+ * @author MILLAU Julien
  *
  */
 public class EmvCard extends AbstractData {
@@ -17,10 +37,10 @@ public class EmvCard extends AbstractData {
 	private static final long serialVersionUID = 736740432469989941L;
 
 	/**
-	 * Card AID
+	 * CPLC data
 	 */
-	private String aid;
-
+	private CPLC cplc;
+	
 	/**
 	 * Holder Lastname
 	 */
@@ -32,34 +52,14 @@ public class EmvCard extends AbstractData {
 	private String holderFirstname;
 
 	/**
-	 * Card number
-	 */
-	private String cardNumber;
-
-	/**
-	 * Expiration date
-	 */
-	private String expireDate;
-
-	/**
 	 * Card type
 	 */
 	private EmvCardScheme type;
-
+	
 	/**
-	 * Left PIN try
+	 * Card ATS (contact less) or ATR
 	 */
-	private int leftPinTry;
-
-	/**
-	 * Application label
-	 */
-	private String applicationLabel;
-
-	/**
-	 * List of issued payment
-	 */
-	private List<EmvTransactionRecord> listTransactions;
+	private String at;
 
 	/**
 	 * List of Atr description
@@ -67,33 +67,34 @@ public class EmvCard extends AbstractData {
 	private Collection<String> atrDescription;
 
 	/**
-	 * Card services
+	 * Track 2 data
 	 */
-	private Service service;
+	private EmvTrack2 track2;
 
 	/**
-	 * Indicate if the nfc is locked on the card
+	 * Track 1 data
 	 */
-	private boolean nfcLocked;
+	private EmvTrack1 track1;
 
 	/**
-	 * Method used to get the field aid
-	 *
-	 * @return the aid
+	 * BIC - Bank Identifier Code
 	 */
-	public String getAid() {
-		return aid;
-	}
+	private String bic;
 
 	/**
-	 * Setter for the field aid
-	 *
-	 * @param aid
-	 *            the aid to set
+	 * IBAN - International Bank Account Number
 	 */
-	public void setAid(final String aid) {
-		this.aid = aid;
-	}
+	private String iban;
+
+	/**
+	 * Application list
+	 */
+	private final List<Application> applications = new ArrayList<Application>();
+
+	/**
+	 * Card state
+	 */
+	private CardStateEnum state = CardStateEnum.UNKNOWN;
 
 	/**
 	 * Method used to get the field holderLastname
@@ -101,7 +102,11 @@ public class EmvCard extends AbstractData {
 	 * @return the holderLastname
 	 */
 	public String getHolderLastname() {
-		return holderLastname;
+		String ret = holderLastname;
+		if (ret == null && track1 != null) {
+			ret = track1.getHolderLastname();
+		}
+		return ret;
 	}
 
 	/**
@@ -120,7 +125,11 @@ public class EmvCard extends AbstractData {
 	 * @return the holderFirstname
 	 */
 	public String getHolderFirstname() {
-		return holderFirstname;
+		String ret = holderFirstname;
+		if (ret == null && track1 != null) {
+			ret = track1.getHolderFirstname();
+		}
+		return ret;
 	}
 
 	/**
@@ -139,17 +148,14 @@ public class EmvCard extends AbstractData {
 	 * @return the cardNumber
 	 */
 	public String getCardNumber() {
-		return cardNumber;
-	}
-
-	/**
-	 * Setter for the field cardNumber
-	 *
-	 * @param cardNumber
-	 *            the cardNumber to set
-	 */
-	public void setCardNumber(final String cardNumber) {
-		this.cardNumber = cardNumber;
+		String ret = null;
+		if (track2 != null) {
+			ret = track2.getCardNumber();
+		}
+		if (ret == null && track1 != null) {
+			ret = track1.getCardNumber();
+		}
+		return ret;
 	}
 
 	/**
@@ -157,37 +163,15 @@ public class EmvCard extends AbstractData {
 	 *
 	 * @return the expireDate
 	 */
-	public String getExpireDate() {
-		return expireDate;
-	}
-
-	/**
-	 * Setter for the field expireDate
-	 *
-	 * @param expireDate
-	 *            the expireDate to set
-	 */
-	public void setExpireDate(final String expireDate) {
-		this.expireDate = expireDate;
-	}
-
-	/**
-	 * Method used to get the field listTransactions
-	 *
-	 * @return the listTransactions
-	 */
-	public List<EmvTransactionRecord> getListTransactions() {
-		return listTransactions;
-	}
-
-	/**
-	 * Setter for the field listTransactions
-	 *
-	 * @param listTransactions
-	 *            the listTransactions to set
-	 */
-	public void setListTransactions(final List<EmvTransactionRecord> listTransactions) {
-		this.listTransactions = listTransactions;
+	public Date getExpireDate() {
+		Date ret = null;
+		if (track2 != null) {
+			ret = track2.getExpireDate();
+		}
+		if (ret == null && track1 != null) {
+			ret = track1.getExpireDate();
+		}
+		return ret;
 	}
 
 	/**
@@ -209,47 +193,9 @@ public class EmvCard extends AbstractData {
 		this.type = type;
 	}
 
-	/**
-	 * Method used to get the field applicationLabel
-	 *
-	 * @return the applicationLabel
-	 */
-	public String getApplicationLabel() {
-		return applicationLabel;
-	}
-
-	/**
-	 * Setter for the field applicationLabel
-	 *
-	 * @param applicationLabel
-	 *            the applicationLabel to set
-	 */
-	public void setApplicationLabel(final String applicationLabel) {
-		this.applicationLabel = applicationLabel;
-	}
-
 	@Override
 	public boolean equals(final Object arg0) {
-		return arg0 instanceof EmvCard && cardNumber != null && cardNumber.equals(((EmvCard) arg0).getCardNumber());
-	}
-
-	/**
-	 * Method used to get the field leftPinTry
-	 *
-	 * @return the leftPinTry
-	 */
-	public int getLeftPinTry() {
-		return leftPinTry;
-	}
-
-	/**
-	 * Setter for the field leftPinTry
-	 *
-	 * @param leftPinTry
-	 *            the leftPinTry to set
-	 */
-	public void setLeftPinTry(final int leftPinTry) {
-		this.leftPinTry = leftPinTry;
+		return arg0 instanceof EmvCard && getCardNumber() != null && getCardNumber().equals(((EmvCard) arg0).getCardNumber());
 	}
 
 	/**
@@ -270,43 +216,145 @@ public class EmvCard extends AbstractData {
 	public void setAtrDescription(final Collection<String> atrDescription) {
 		this.atrDescription = atrDescription;
 	}
-
+	
 	/**
-	 * Method used to get the field service
+	 * Method used to get the field at
 	 *
-	 * @return the service
+	 * @return the at value
 	 */
-	public Service getService() {
-		return service;
+	public String getAt() {
+		return at;
 	}
 
 	/**
-	 * Setter for the field service
+	 * Setter for the field at
 	 *
-	 * @param service
-	 *            the service to set
+	 * @param atr
+	 *            the at value to set
 	 */
-	public void setService(final Service service) {
-		this.service = service;
+	public void setAt(final String at) {
+		this.at = at;
 	}
 
 	/**
-	 * Method used to get the field nfcLocked
+	 * Method used to get the field state
 	 *
-	 * @return the nfcLocked
+	 * @return the state
 	 */
-	public boolean isNfcLocked() {
-		return nfcLocked;
+	public CardStateEnum getState() {
+		return state;
 	}
 
 	/**
-	 * Setter for the field nfcLocked
+	 * Setter for the field state
 	 *
-	 * @param nfcLocked
-	 *            the nfcLocked to set
+	 * @param state
+	 *            the state to set
 	 */
-	public void setNfcLocked(final boolean nfcLocked) {
-		this.nfcLocked = nfcLocked;
+	public void setState(final CardStateEnum state) {
+		this.state = state;
 	}
 
+	/**
+	 * Method used to get the field track2
+	 *
+	 * @return the track2
+	 */
+	public EmvTrack2 getTrack2() {
+		return track2;
+	}
+
+	/**
+	 * Setter for the field track2
+	 *
+	 * @param track2
+	 *            the track2 to set
+	 */
+	public void setTrack2(final EmvTrack2 track2) {
+		this.track2 = track2;
+	}
+
+	/**
+	 * Method used to get the field track1
+	 *
+	 * @return the track1
+	 */
+	public EmvTrack1 getTrack1() {
+		return track1;
+	}
+
+	/**
+	 * Setter for the field track1
+	 *
+	 * @param track1
+	 *            the track1 to set
+	 */
+	public void setTrack1(final EmvTrack1 track1) {
+		this.track1 = track1;
+	}
+
+	/**
+	 * Method used to get the field bic
+	 *
+	 * @return the bic
+	 */
+	public String getBic() {
+		return bic;
+	}
+
+	/**
+	 * Setter for the field bic
+	 *
+	 * @param bic
+	 *            the bic to set
+	 */
+	public void setBic(final String bic) {
+		this.bic = bic;
+	}
+
+	/**
+	 * Method used to get the field iban
+	 *
+	 * @return the iban
+	 */
+	public String getIban() {
+		return iban;
+	}
+
+	/**
+	 * Setter for the field iban
+	 *
+	 * @param iban
+	 *            the iban to set
+	 */
+	public void setIban(final String iban) {
+		this.iban = iban;
+	}
+
+	/**
+	 * Method used to get the field applications
+	 *
+	 * @return the applications
+	 */
+	public List<Application> getApplications() {
+		return applications;
+	}
+
+	/**
+	 * Get the field cplc
+	 * @return the cplc
+	 */
+	public CPLC getCplc() {
+		return cplc;
+	}
+
+	/**
+	 * Setter for the field cplc
+	 *
+	 * @param cplc the cplc to set
+	 */
+	public void setCplc(CPLC cplc) {
+		this.cplc = cplc;
+	}
+	
 }

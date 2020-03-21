@@ -1,16 +1,31 @@
+/*
+ * Copyright (C) 2019 MILLAU Julien
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.pro100svitlo.creditCardNfcReader.iso7816emv;
-
-import com.pro100svitlo.creditCardNfcReader.utils.BytesUtils;
 
 import java.util.Arrays;
 
+import fr.devnied.bitlib.BytesUtils;
+
 /**
  * This implementation is a mix of EMV & VISA TTQ
- * 
+ *
  * VISA: Terminal Transaction Qualifiers (Tag '9F66') is a reader data element indicating capabilities (e.g., MSD or qVSDC) and
  * transaction-specific requirements (e.g., online) of the reader. It is requested by the card in the PDOL and used by the card to
  * determine how to process the transaction (for example, process using MSD or qVSDC, process offline or online).
- * 
+ *
  */
 public class TerminalTransactionQualifiers {
 
@@ -67,7 +82,7 @@ public class TerminalTransactionQualifiers {
 		return BytesUtils.matchBitByBitIndex(data[2], 6);
 	}
 
-	public void setContactlessMagneticStripeSupported(final boolean value) {
+	public void setMagneticStripeSupported(final boolean value) {
 		data[0] = BytesUtils.setBit(data[0], 7, value);
 	}
 

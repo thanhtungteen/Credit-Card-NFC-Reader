@@ -1,20 +1,35 @@
+/*
+ * Copyright (C) 2019 MILLAU Julien
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.pro100svitlo.creditCardNfcReader.enums;
-
-import com.pro100svitlo.creditCardNfcReader.utils.BytesUtils;
-
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.StringUtils;
+
+import fr.devnied.bitlib.BytesUtils;
 
 /**
  * Class used to define all supported NFC EMV paycard. <link>http://en.wikipedia.org/wiki/Europay_Mastercard_Visa</link>
+ *
+ * @author MILLAU Julien
  *
  */
 public enum EmvCardScheme {
 
 	UNKNOWN("",""),
-
 	VISA("VISA", "^4[0-9]{6,}$", "A0 00 00 00 03", "A0 00 00 00 03 10 10", "A0 00 00 00 98 08 48"), //
 	NAB_VISA("VISA", "^4[0-9]{6,}$", "A0 00 00 00 03", "A0 00 00 03", "A0 00 00 00 03 10 10", "A0 00 00 00 98 08 48"),
 	MASTER_CARD("Master card", "^5[1-5][0-9]{5,}$", "A0 00 00 00 04", "A0 00 00 00 05"), //
@@ -35,7 +50,7 @@ public enum EmvCardScheme {
 	TENN("The Exchange Network ATM Network", null, "A0 00 00 04 39"), //
 	RUPAY("Rupay", null, "A0 00 00 05 24 10 10"), //
 	ПРО100("ПРО100", null, "A0 00 00 04 32 00 01"), //
-	ZKA("ZKA", null, "D2 76 00 00 25 45 50 01 00"), //
+	GELDKARTE("GeldKarte/ZKA", null, "D2 76 00 00 25 45 50 02 00", "D2 76 00 00 25 45 50 01 00", "D2 76 00 00 25"), //
 	BANKAXEPT("Bankaxept", null, "D5 78 00 00 02 10 10"), //
 	BRADESCO("BRADESCO", null, "F0 00 00 00 03 00 01"),
 	MIDLAND("Midland", null, "A0 00 00 00 24 01"), //
@@ -66,15 +81,15 @@ public enum EmvCardScheme {
 
 	/**
 	 * Constructor using fields
-	 * 
-	 * @param
+	 *
+	 * @param pAid
 	 *            Card AID or RID
 	 * @param pScheme
 	 *            scheme name
 	 * @param pRegex
 	 *            Card regex
 	 */
-	EmvCardScheme(final String pScheme, final String pRegex, final String... pAids) {
+	private EmvCardScheme(final String pScheme, final String pRegex, final String... pAids) {
 		aids = pAids;
 		aidsByte = new byte[pAids.length][];
 		for (int i = 0; i < aids.length; i++) {
@@ -90,7 +105,7 @@ public enum EmvCardScheme {
 
 	/**
 	 * Method used to get the field aid
-	 * 
+	 *
 	 * @return the aid
 	 */
 	public String[] getAid() {
@@ -99,7 +114,7 @@ public enum EmvCardScheme {
 
 	/**
 	 * Method used to get the field name
-	 * 
+	 *
 	 * @return the name
 	 */
 	public String getName() {
@@ -108,13 +123,13 @@ public enum EmvCardScheme {
 
 	/**
 	 * Get card type by AID
-	 * 
+	 *
 	 * @param pAid
 	 *            card AID
 	 * @return CardType or null
 	 */
 	public static EmvCardScheme getCardTypeByAid(final String pAid) {
-		EmvCardScheme ret = EmvCardScheme.UNKNOWN ;
+		EmvCardScheme ret = null;
 		if (pAid != null) {
 			String aid = StringUtils.deleteWhitespace(pAid);
 			for (EmvCardScheme val : EmvCardScheme.values()) {
@@ -131,13 +146,13 @@ public enum EmvCardScheme {
 
 	/**
 	 * Method used to the the card type with regex
-	 * 
+	 *
 	 * @param pCardNumber
 	 *            card number
 	 * @return the type of the card using regex
 	 */
 	public static EmvCardScheme getCardTypeByCardNumber(final String pCardNumber) {
-		EmvCardScheme ret = EmvCardScheme.UNKNOWN;
+		EmvCardScheme ret = null;
 		if (pCardNumber != null) {
 			for (EmvCardScheme val : EmvCardScheme.values()) {
 				if (val.pattern != null && val.pattern.matcher(StringUtils.deleteWhitespace(pCardNumber)).matches()) {
@@ -151,7 +166,7 @@ public enum EmvCardScheme {
 
 	/**
 	 * Method used to get the field aidByte
-	 * 
+	 *
 	 * @return the aidByte
 	 */
 	public byte[][] getAidByte() {

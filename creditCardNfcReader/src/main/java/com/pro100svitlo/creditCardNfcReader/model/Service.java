@@ -1,20 +1,37 @@
+/*
+ * Copyright (C) 2019 MILLAU Julien
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.pro100svitlo.creditCardNfcReader.model;
 
-import com.pro100svitlo.creditCardNfcReader.utils.BytesUtils;
+import org.apache.commons.lang3.StringUtils;
+
 import com.pro100svitlo.creditCardNfcReader.model.enums.ServiceCode1Enum;
 import com.pro100svitlo.creditCardNfcReader.model.enums.ServiceCode2Enum;
 import com.pro100svitlo.creditCardNfcReader.model.enums.ServiceCode3Enum;
 import com.pro100svitlo.creditCardNfcReader.utils.EnumUtils;
 
-import org.apache.commons.lang3.StringUtils;
-
 import fr.devnied.bitlib.BitUtils;
+import fr.devnied.bitlib.BytesUtils;
 
 /**
- * Track 2 service
- * 
+ * Track 1 & 2 service
+ *
+ * @author MILLAU julien
+ *
  */
-public class Service extends AbstractData{
+public class Service extends AbstractData {
 
 	/**
 	 * Generated serial UID
@@ -38,7 +55,7 @@ public class Service extends AbstractData{
 
 	/**
 	 * Constructor with service bytes array parameter
-	 * 
+	 *
 	 * @param pData
 	 *            service as byte array
 	 */
@@ -53,7 +70,7 @@ public class Service extends AbstractData{
 
 	/**
 	 * Method used to get the field serviceCode1
-	 * 
+	 *
 	 * @return the serviceCode1
 	 */
 	public ServiceCode1Enum getServiceCode1() {
@@ -62,7 +79,7 @@ public class Service extends AbstractData{
 
 	/**
 	 * Method used to get the field serviceCode2
-	 * 
+	 *
 	 * @return the serviceCode2
 	 */
 	public ServiceCode2Enum getServiceCode2() {
@@ -71,7 +88,7 @@ public class Service extends AbstractData{
 
 	/**
 	 * Method used to get the field serviceCode3
-	 * 
+	 *
 	 * @return the serviceCode3
 	 */
 	public ServiceCode3Enum getServiceCode3() {

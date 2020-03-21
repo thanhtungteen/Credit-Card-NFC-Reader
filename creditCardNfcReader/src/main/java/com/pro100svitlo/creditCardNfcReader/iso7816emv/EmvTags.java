@@ -1,19 +1,35 @@
+/*
+ * Copyright 2010 sasc
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.pro100svitlo.creditCardNfcReader.iso7816emv;
-
-import com.pro100svitlo.creditCardNfcReader.enums.TagValueTypeEnum;
-import com.pro100svitlo.creditCardNfcReader.iso7816emv.impl.TagImpl;
 
 import java.lang.reflect.Field;
 import java.util.LinkedHashMap;
 
+import com.pro100svitlo.creditCardNfcReader.enums.TagValueTypeEnum;
+import com.pro100svitlo.creditCardNfcReader.iso7816emv.impl.TagImpl;
+
 /**
  * http://www.emvlab.org/emvtags/all/
  *
- * 
+ *
  * The coding of primitive context-specific class data objects in the ranges '80' to '9E' and '9F00' to '9F4F' is reserved for EMV
  * specification. The coding of primitive context-specific class data objects in the range '9F50' to '9F7F' is reserved for the
  * payment systems.
  *
+ * @author sasc
  */
 public final class EmvTags {
 
@@ -102,7 +118,7 @@ public final class EmvTags {
 	public static final ITag ISSUER_ACTION_CODE_ONLINE = new TagImpl("9f0f", TagValueTypeEnum.BINARY, "Issuer Action Code - Online", "Specifies the issuerâ€™s conditions that cause a transaction to be transmitted online");
 	public static final ITag ISSUER_APPLICATION_DATA = new TagImpl("9f10", TagValueTypeEnum.BINARY, "Issuer Application Data", "Contains proprietary application data for transmission to the issuer in an online transaction");
 	public static final ITag ISSUER_CODE_TABLE_INDEX = new TagImpl("9f11", TagValueTypeEnum.NUMERIC, "Issuer Code Table Index", "Indicates the code table according to ISO/IEC 8859 for displaying the Application Preferred Name");
-	public static final ITag APP_PREFERRED_NAME = new TagImpl("9f12", TagValueTypeEnum.TEXT, "Application Preferred Name", "Preferred mnemonic associated with the AID");
+	public static final ITag APPLICATION_PREFERRED_NAME = new TagImpl("9f12", TagValueTypeEnum.TEXT, "Application Preferred Name", "Preferred mnemonic associated with the AID");
 	public static final ITag LAST_ONLINE_ATC_REGISTER = new TagImpl("9f13", TagValueTypeEnum.BINARY, "Last Online Application Transaction Counter (ATC) Register", "ATC value of the last transaction that went online");
 	public static final ITag LOWER_CONSEC_OFFLINE_LIMIT = new TagImpl("9f14", TagValueTypeEnum.BINARY, "Lower Consecutive Offline Limit", "Issuer-specified preference for the maximum number of consecutive offline transactions for this ICC application allowed in a terminal with online capability");
 	public static final ITag MERCHANT_CATEGORY_CODE = new TagImpl("9f15", TagValueTypeEnum.NUMERIC, "Merchant Category Code", "Classifies the type of business being done by the merchant, represented according to ISO 8583:1993 for Card Acceptor Business Code");
@@ -257,6 +273,9 @@ public final class EmvTags {
 	public static final ITag TRANSACTION_CATEGORY_CODE = new TagImpl("9f53", TagValueTypeEnum.BINARY, "Transaction Category Code", "");
 	public static final ITag DS_ODS_CARD = new TagImpl("9f54", TagValueTypeEnum.BINARY, "DS ODS Card", "");
 	public static final ITag MOBILE_SUPPORT_INDICATOR = new TagImpl("9f55", TagValueTypeEnum.BINARY, "Mobile Support Indicator", "");
+	public static final ITag MERCHANT_TYPE_INDICATOR = new TagImpl("9f58", TagValueTypeEnum.BINARY, "Merchant Type Indicator (Interac)", "");
+	public static final ITag TERMINAL_TRANSACTION_INFORMATION = new TagImpl("9f59", TagValueTypeEnum.BINARY, "Terminal Transaction Information (Interac)", "");
+	public static final ITag TERMINAL_TRANSACTION_TYPE = new TagImpl("9f5A", TagValueTypeEnum.BINARY, "Terminal transaction Type (Interac)", "");
 	public static final ITag DSDOL = new TagImpl("9f5b", TagValueTypeEnum.BINARY, "DSDOL", "");
 	public static final ITag DS_REQUESTED_OPERATOR_ID = new TagImpl("9f5c", TagValueTypeEnum.BINARY, "DS Requested Operator ID", "");
 	// 9f5d 01 01
@@ -356,7 +375,7 @@ public final class EmvTags {
 
 	/**
 	 * If the tag is not found, this method returns the "[UNHANDLED TAG]" containing 'tagBytes'
-	 * 
+	 *
 	 * @param tagBytes
 	 * @return
 	 */
